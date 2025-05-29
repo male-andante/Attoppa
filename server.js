@@ -7,6 +7,7 @@ import { v2 as cloudinary } from 'cloudinary'
 import {CloudinaryStorage} from "multer-storage-cloudinary"
 import passport from 'passport'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+import googleStrategy from './middlewares/oAuthMiddleware.js'
 
 const server = express()
 
@@ -20,6 +21,8 @@ import authRouter from './routes/auth.js'
 server.use(express.json())
 server.use(cors())
 server.use(passport.initialize())
+passport.use('google', googleStrategy)
+
 
 // Routes middleware
 server.use('/events', eventRouter)
@@ -63,20 +66,11 @@ const storageCloud = new CloudinaryStorage({
 
 const cloud = multer({ storage: storageCloud })
 
+
 server.listen(process.env.PORT, () => {
     console.log(`Node app listening on port ${process.env.PORT}`)
 })
 
 connectDB()
-
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    // Logica per gestire l'utente
-  }
-));
 
 

@@ -1,14 +1,20 @@
 // Importo le dipendenze necessario per il progetto
 import express from 'express';
-import router from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import passport from 'passport';
 import 'dotenv/config';
-const saltRounds = +process.env.SALT_ROUNDS;
-const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
 // Import Model
 import userModel from "../models/userModel.js"
+
+// Import Middleware
+import authMiddleware from "../middlewares/authMiddleware.js" 
+import adminMiddleware from '../middlewares/adminMiddleware.js';
+
+const saltRounds = +process.env.SALT_ROUNDS;
+const jwtSecretKey = process.env.JWT_SECRET_KEY;
+
 
 const authRouter = express.Router()
 
@@ -21,70 +27,154 @@ const authRouter = express.Router()
     "verified" : false
 } */
 
-// Auth Routes
-authRouter.post('/auth/register', async(req, res) => {
-    // Logica per la registrazione di un utente
-    /* const obj = req.body;
-    const user = new userModel(obj)
-    const userSave = await user.save()
-    return res.status(201).json(userSave) */
+// Register Route
+authRouter.post('/register', async(req, res) => {
+    try {
+        const { username, email, password, isAdmin } = req.body;
 
-    const password = req.body.password;
-
-    // Store hash in your password DB.
-    const user = new userModel({
-        ...req.body,
-        password: await bcrypt.hash(password, saltRounds)
-    })
-    const userSaved = await user.save()
-    return res.status(201).json(userSaved)
-
-})
-
-// Ogg che invierà il client tramite una chiamata ajax
-/* {
-    "username" : "johnsmith",
-    "password" : "Pa$$w0rd!",
-} */
-
-authRouter.post('/auth/login', async(req, res) => {
-    // Logica per il login di un utente
-    const username = req.body.username
-    const password = req.body.password
-
-    const userLogin = await userModel.findOne({username: username})
-    console.log(userLogin)
-    if(userLogin) {
-        // Lo username è stato trovato nel DB
-        // Controllo la password
-        const loginPassword = await bcrypt.compare(password, userLogin.password)
-        if(loginPassword) {
-            // La password è corretta
-            // Genero un Token JWT
-            
-            // Soluzione 1
-            const token = jwt.sign(
-                {
-                    id: userLogin.id,
-                    username: userLogin.username,
-                    fullname: userLogin.fullname,
-                    email: userLogin.email
-                }
-                , jwtSecretKey, { expiresIn: '1h' });
-
-            return res.status(200).json(token)
-        } else {
-            // La password è errata
-            return res.status(400).json({message: 'Invalid Password!!'})
+        // Verifica se l'utente esiste già
+        const existingUser = await userModel.findOne({ 
+            $or: [{ email }, { username }] 
+        });
+        
+        if (existingUser) {
+            return res.status(400).json({ 
+                message: existingUser.email === email ? 
+                    'Email già registrata' : 
+                    'Username già in uso'
+            });
         }
-    } else {
-        // Lo username non è stato trovato nel DB
-        return res.status(400).json({message: 'Invalid Username!!'})
+
+        // Hash della password
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Creazione nuovo utente
+        const user = new userModel({
+            ...req.body,
+            password: hashedPassword
+        });
+
+        const userSaved = await user.save();
+        
+        // Rimuovo la password dalla risposta
+        const userResponse = userSaved.toObject();
+        delete userResponse.password;
+
+        // Genero il token
+        const token = jwt.sign(
+            {
+                id: userSaved.id,
+                username: userSaved.username,
+                fullname: userSaved.fullname,
+                email: userSaved.email,
+                isAdmin: userSaved.isAdmin
+            },
+            jwtSecretKey, 
+            { expiresIn: '1h' }
+        );
+        
+        // Restituisco la risposta con il token e l'indicazione se è admin
+        return res.status(201).json({
+            user: userResponse,
+            token,
+            redirectTo: userSaved.isAdmin ? '/dashboard' : '/'
+        });
+    } catch (error) {
+        console.error('Errore durante la registrazione:', error);
+        return res.status(500).json({ message: 'Errore durante la registrazione' });
     }
+});
 
-})
+// Login Route
+authRouter.post('/login', async(req, res) => {
+    try {
+        const { username, password } = req.body;
 
+        const user = await userModel.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ message: 'Username non trovato' });
+        }
 
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Password non valida' });
+        }
+
+        const token = jwt.sign(
+            {
+                id: user.id,
+                username: user.username,
+                fullname: user.fullname,
+                email: user.email
+            },
+            jwtSecretKey, 
+            { expiresIn: '1h' }
+        );
+
+        return res.status(200).json({ token, user: {
+            id: user.id,
+            username: user.username,
+            fullname: user.fullname,
+            email: user.email
+        }});
+    } catch (error) {
+        console.error('Errore durante il login:', error);
+        return res.status(500).json({ message: 'Errore durante il login' });
+    }
+});
+
+// Google Auth Routes
+authRouter.get('/google',
+    passport.authenticate('google', { 
+        scope: ['profile', 'email'],
+        prompt: 'select_account'
+    })
+);
+
+authRouter.get('/google/callback',
+    passport.authenticate('google', { 
+        session: false,
+        failureRedirect: '/login'
+    }),
+    (req, res) => {
+        try {
+            // Reindirizza al frontend con il token
+            res.redirect(`${process.env.AUTH_CALLBACK_URL}?token=${req.user.accessToken}`);
+        } catch (error) {
+            console.error('Errore durante la callback di Google:', error);
+            res.redirect(`${process.env.AUTH_CALLBACK_URL}?error=auth_failed`);
+        }
+    }
+);
+
+// Verifica Token Route
+authRouter.get('/verify', authMiddleware, (req, res) => {
+    try {
+        res.status(200).json({ 
+            message: 'Token valido',
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Errore durante la verifica del token:', error);
+        res.status(401).json({ message: 'Token non valido' });
+    }
+});
+
+// Funzione Soluzione 2 creazione di un token
+const generateToken = (payload) => {
+    return new Promise((res, rej) => {
+        jwt.sign(payload, jwtSecretKey, { expiresIn: '1h' }, (err, token) => {
+            if(err) rej(err)
+            else res(token)
+        });
+    })
+}
+
+// Route protetta per admin
+authRouter.get('/dashboard', adminMiddleware, (req, res) => {
+    // Solo gli admin possono accedere qui
+    res.json({ message: 'Benvenuto nella dashboard. Inserisci il tuo evento o la tua location' });
+});
 
 // Export Router
 export default authRouter;
