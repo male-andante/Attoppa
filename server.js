@@ -11,10 +11,11 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 const server = express()
 
 //Routes
-import eventRouter from './routes/eventRoutes.js'
-import locationsRouter from './routes/locationsRoutes.js'
-import usersRouter from './routes/userRoutes.js'
-
+import eventRouter from './routes/eventsRoutes.js'
+import locationRouter from './routes/locationsRoutes.js'
+import userRouter from './routes/usersRoutes.js'
+import authRouter from './routes/auth.js'
+    
 // Middleware
 server.use(express.json())
 server.use(cors())
@@ -22,8 +23,10 @@ server.use(passport.initialize())
 
 // Routes middleware
 server.use('/events', eventRouter)
-server.use('/locations', locationsRouter)
-server.use('/users', usersRouter)
+server.use('/locations', locationRouter)
+server.use('/users', userRouter)
+server.use('/auth', authRouter)
+
 
 // Multer
 const storage = multer.diskStorage({
@@ -66,7 +69,7 @@ server.listen(process.env.PORT, () => {
 
 connectDB()
 
-/*passport.use(new GoogleStrategy({
+passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: "/auth/google/callback"
@@ -74,4 +77,6 @@ connectDB()
   function(accessToken, refreshToken, profile, done) {
     // Logica per gestire l'utente
   }
-));*/
+));
+
+
