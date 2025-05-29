@@ -16,6 +16,7 @@ import eventRouter from './routes/eventsRoutes.js'
 import locationRouter from './routes/locationsRoutes.js'
 import userRouter from './routes/usersRoutes.js'
 import authRouter from './routes/auth.js'
+import dashboardRouter from './routes/dashboardRoutes.js'
     
 // Middleware
 server.use(express.json())
@@ -29,6 +30,7 @@ server.use('/events', eventRouter)
 server.use('/locations', locationRouter)
 server.use('/users', userRouter)
 server.use('/auth', authRouter)
+server.use('/dashboard', dashboardRouter)
 
 
 // Multer
