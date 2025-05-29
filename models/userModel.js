@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     isAdmin: { type: Boolean, required: true, default: false }
-})  // così definisco che forma deve avere l'utente.
+})
 
 const User = mongoose.model('Users', userSchema)
 
