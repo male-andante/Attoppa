@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import GoogleStrategy from 'passport-google-oauth2';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import jwt from 'jsonwebtoken';
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
