@@ -24,14 +24,12 @@ server.use(cors())
 server.use(passport.initialize())
 passport.use('google', googleStrategy)
 
-
 // Routes middleware
 server.use('/events', eventRouter)
 server.use('/locations', locationRouter)
 server.use('/users', userRouter)
 server.use('/auth', authRouter)
 server.use('/dashboard', dashboardRouter)
-
 
 // Multer
 const storage = multer.diskStorage({
@@ -50,7 +48,6 @@ function fileFilter(req, file, cb) {
 const upload = multer({ storage: storage, fileFilter: fileFilter })
 
 // Utilizzo di Multer con Cloudinary
-
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUDINARY_APY_KEY,
@@ -64,15 +61,16 @@ const storageCloud = new CloudinaryStorage({
       format: async (req, file) => 'png',
       public_id: (req, file) => file.originalname,
     },
-  });
+})
 
 const cloud = multer({ storage: storageCloud })
 
-
-server.listen(process.env.PORT, () => {
-    console.log(`Node app listening on port ${process.env.PORT}`)
-})
-
+// Connessione al database
 connectDB()
+
+// Avvio server
+server.listen(process.env.PORT, () => {
+    console.log(`Server in esecuzione sulla porta ${process.env.PORT}`)
+})
 
 

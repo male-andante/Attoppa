@@ -86,40 +86,52 @@ authRouter.post('/register', async(req, res) => {
 });
 
 // Login Route
-authRouter.post('/login', async(req, res) => {
+authRouter.post('/login', async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        const user = await userModel.findOne({ username });
+        // Validazione input
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email e password sono obbligatori' });
+        }
+
+        // Ricerca utente
+        const user = await userModel.findOne({ email: email.toLowerCase() });
         if (!user) {
-            return res.status(400).json({ message: 'Username non trovato' });
+            return res.status(401).json({ message: 'Credenziali non valide' });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Password non valida' });
+        // Verifica password
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            return res.status(401).json({ message: 'Credenziali non valide' });
         }
 
+        // Generazione token
         const token = jwt.sign(
-            {
-                id: user.id,
-                username: user.username,
-                fullname: user.fullname,
-                email: user.email
+            { 
+                id: user._id,
+                email: user.email,
+                isAdmin: user.isAdmin 
             },
-            jwtSecretKey, 
+            process.env.JWT_SECRET_KEY,
             { expiresIn: '1h' }
         );
 
-        return res.status(200).json({ token, user: {
-            id: user.id,
-            username: user.username,
-            fullname: user.fullname,
-            email: user.email
-        }});
+        const userResponse = user.toObject();
+        delete userResponse.password;
+
+        res.json({
+            status: 'success',
+            data: {
+                user: userResponse,
+                token,
+                redirectTo: user.isAdmin ? '/dashboard' : '/'
+            }
+        });
     } catch (error) {
         console.error('Errore durante il login:', error);
-        return res.status(500).json({ message: 'Errore durante il login' });
+        res.status(500).json({ message: 'Errore durante il login' });
     }
 });
 
