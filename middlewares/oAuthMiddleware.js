@@ -7,51 +7,74 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY;
 import userModel from "../models/userModel.js"
 
 const googleStrategy = new GoogleStrategy({
-        clientID:     process.env.GOOGLE_CLIENT_ID,
+        clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: process.env.GOOGLE_CALLBACK_URL
     }, async function(accessToken, refreshToken, profile, done) {
-        try{
-            // profile è l'oggetto che mi restituisce google con i dati dell'utente loggato
-            console.log("PROFILE: ", profile)
-            // Destrutturo tutte le informazioni che mi invia google in profile._json
-            const {email, name, given_name, family_name, email_verified } = profile._json
-            // Cerco nel mio DB se è presente un utente registrato con la mail che mi invia google
-            const user = await userModel.findOne({email})
-            if(user) {
-                // Se presente lo leggo e utilizzo i dati per la creazione del token
-                console.log("Utente già presente nel DB")
-                // Creo il token JWT 
-                const accessToken = jwt.sign({
+        try {
+            // Destrutturo le informazioni da Google
+            const { 
+                email, 
+                name, 
+                given_name, 
+                family_name, 
+                email_verified,
+                sub: googleId 
+            } = profile._json;
+
+            // Cerco prima per googleId, poi per email
+            let user = await userModel.findOne({ 
+                $or: [
+                    { googleId },
+                    { email: email.toLowerCase() }
+                ]
+            });
+
+            if (user) {
+                // Se l'utente esiste ma non ha googleId, aggiorniamolo
+                if (!user.googleId) {
+                    user.googleId = googleId;
+                    user.verified = email_verified;
+                    await user.save();
+                }
+
+                // Genero il token
+                const token = jwt.sign({
                     id: user.id,
                     username: user.username,
-                    fullname: user.fullname,
-                    email: user.email
-                }, jwtSecretKey, { expiresIn: '1h' })
-                done(null, {accessToken})
-            } else {
-                // Se NON presente lo salvo nel mio DB e poi genero il token
-                // Creo un oggetto userModel con i dati letti da Google
-                const newUser = new userModel({
-                    username: given_name+family_name,
-                    fullname: name,
-                    email: email,
-                    password: '-',
-                    verified: email_verified
-                })
-                // Salvo il nuovo utente nel mio DB
-                const createUser = await newUser.save();
-                 // Creo il token JWT 
-                const accessToken = jwt.sign({
-                    id: createUser.id,
-                    username: createUser.username,
-                    fullname: createUser.fullname,
-                    email: createUser.email
-                }, jwtSecretKey, { expiresIn: '1h' })
-                done(null, {accessToken})
+                    name: user.name,
+                    email: user.email,
+                    isAdmin: user.isAdmin
+                }, jwtSecretKey, { expiresIn: '1h' });
+
+                return done(null, { accessToken: token });
             }
-        } catch(error) {
-            done(error)
+
+            // Se l'utente non esiste, lo creiamo
+            const newUser = new userModel({
+                name: name,
+                email: email.toLowerCase(),
+                googleId,
+                verified: email_verified,
+                // username verrà generato automaticamente dal pre-save hook
+            });
+
+            const savedUser = await newUser.save();
+
+            // Genero il token
+            const token = jwt.sign({
+                id: savedUser.id,
+                username: savedUser.username,
+                name: savedUser.name,
+                email: savedUser.email,
+                isAdmin: savedUser.isAdmin
+            }, jwtSecretKey, { expiresIn: '1h' });
+
+            return done(null, { accessToken: token });
+
+        } catch (error) {
+            console.error('Errore durante l\'autenticazione Google:', error);
+            return done(error);
         }
     }
 );
