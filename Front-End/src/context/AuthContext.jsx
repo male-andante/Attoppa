@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import axios from 'axios'
+
+const API_URL = 'http://localhost:3000'
 
 const AuthContext = createContext(null)
 
@@ -15,24 +16,33 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (token) {
-      verifyToken(token)
+      verifyToken()
     } else {
       setAuth(prev => ({ ...prev, loading: false }))
     }
   }, [])
 
-  const verifyToken = async (token) => {
+  const verifyToken = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/auth/verify', {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${API_URL}/auth/verify`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       })
+
+      if (!response.ok) {
+        throw new Error('Token non valido')
+      }
+
+      const data = await response.json()
       setAuth({
         isAuthenticated: true,
-        user: response.data.data,
+        user: data.data,
         loading: false,
         error: null
       })
-    } catch (error) {
+    } catch {
       localStorage.removeItem('token')
       setAuth({
         isAuthenticated: false,
@@ -46,8 +56,23 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setAuth(prev => ({ ...prev, loading: true, error: null }))
-      const response = await axios.post('http://localhost:3000/auth/login', credentials)
-      const { token, ...userData } = response.data.data
+      
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Errore durante il login')
+      }
+
+      const data = await response.json()
+      const { token, ...userData } = data.data
+      
       localStorage.setItem('token', token)
       setAuth({
         isAuthenticated: true,
@@ -55,12 +80,13 @@ export const AuthProvider = ({ children }) => {
         loading: false,
         error: null
       })
+      
       return userData.redirectTo || '/'
     } catch (error) {
       setAuth(prev => ({
         ...prev,
         loading: false,
-        error: error.response?.data?.message || 'Errore durante il login'
+        error: error.message || 'Errore durante il login'
       }))
       throw error
     }
@@ -69,8 +95,23 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setAuth(prev => ({ ...prev, loading: true, error: null }))
-      const response = await axios.post('http://localhost:3000/auth/register', userData)
-      const { token, ...user } = response.data.data
+      
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Errore durante la registrazione')
+      }
+
+      const data = await response.json()
+      const { token, ...user } = data.data
+      
       localStorage.setItem('token', token)
       setAuth({
         isAuthenticated: true,
@@ -78,12 +119,13 @@ export const AuthProvider = ({ children }) => {
         loading: false,
         error: null
       })
+      
       return user.redirectTo || '/'
     } catch (error) {
       setAuth(prev => ({
         ...prev,
         loading: false,
-        error: error.response?.data?.message || 'Errore durante la registrazione'
+        error: error.message || 'Errore durante la registrazione'
       }))
       throw error
     }
@@ -93,12 +135,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = localStorage.getItem('token')
       if (token) {
-        await axios.post('http://localhost:3000/auth/logout', null, {
-          headers: { Authorization: `Bearer ${token}` }
+        await fetch(`${API_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         })
       }
-    } catch (error) {
-      console.error('Errore durante il logout:', error)
+    } catch {
+      console.error('Errore durante il logout')
     } finally {
       localStorage.removeItem('token')
       setAuth({
