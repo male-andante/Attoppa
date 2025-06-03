@@ -1,27 +1,29 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 import Layout from './components/layout/Layout';
 import PrivateRoute from './components/auth/PrivateRoute';
 import AdminRoute from './components/auth/AdminRoute';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Home from './pages/Home';
+import Events from './pages/Events';
+import EventDetail from './pages/EventDetail';
+import Locations from './pages/Locations';
+import LocationDetail from './pages/LocationDetail';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import EventForm from './pages/admin/EventForm';
+import LocationForm from './pages/admin/LocationForm';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// Importazione pagine (le creeremo dopo)
-const Home = () => <div>Home Page</div>;
-const Login = () => <div>Login Page</div>;
-const Register = () => <div>Register Page</div>;
-const Events = () => <div>Events Page</div>;
-const EventDetail = () => <div>Event Detail Page</div>;
-const Locations = () => <div>Locations Page</div>;
-const LocationDetail = () => <div>Location Detail Page</div>;
-const Profile = () => <div>Profile Page</div>;
-const AdminDashboard = () => <div>Admin Dashboard</div>;
-const Settings = () => <div>Settings Page</div>;
-
 function App() {
+    console.log('App: Rendering...');
     return (
         <Router>
             <AuthProvider>
                 <Layout>
+                    {console.log('App: Layout rendered')}
                     <Routes>
                         {/* Route pubbliche */}
                         <Route path="/" element={<Home />} />
@@ -41,6 +43,10 @@ function App() {
                         {/* Route admin */}
                         <Route element={<AdminRoute />}>
                             <Route path="/admin" element={<AdminDashboard />} />
+                            <Route path="/admin/events/new" element={<EventForm />} />
+                            <Route path="/admin/events/:id/edit" element={<EventForm />} />
+                            <Route path="/admin/locations/new" element={<LocationForm />} />
+                            <Route path="/admin/locations/:id/edit" element={<LocationForm />} />
                         </Route>
                     </Routes>
                 </Layout>

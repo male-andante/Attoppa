@@ -1,9 +1,9 @@
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const NavigationBar = () => {
-    const { user, logout, isAuthenticated, isAdmin } = useAuth();
+    const { logout, isAuthenticated, isAdmin } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -14,7 +14,7 @@ const NavigationBar = () => {
     return (
         <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
             <Container>
-                <Navbar.Brand as={Link} to="/">RA Guide</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/">Attoppa</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">

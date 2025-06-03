@@ -1,12 +1,99 @@
-# React + Vite
+# Front-End Techno Events App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Applicazione React per la scoperta e gestione di eventi techno.
 
-Currently, two official plugins are available:
+## Funzionalità
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Autenticazione utente (email/password e Google)
+- Visualizzazione eventi vicini con geolocalizzazione
+- Ricerca e filtro eventi
+- Gestione interessi agli eventi
+- Visualizzazione dettagli eventi e location
+- Dashboard admin per la gestione di eventi e location
+- Mappe interattive per la visualizzazione delle location
 
-## Expanding the ESLint configuration
+## Tecnologie Utilizzate
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React 18
+- Vite
+- React Router v6
+- React Bootstrap
+- Leaflet (mappe)
+- React Icons
+- Context API per la gestione dello stato
+
+## Requisiti
+
+- Node.js 16+
+- npm 7+
+
+## Installazione
+
+1. Clona il repository
+2. Installa le dipendenze:
+   ```bash
+   npm install
+   ```
+3. Copia il file `.env.example` in `.env` e configura le variabili d'ambiente:
+   ```bash
+   cp .env.example .env
+   ```
+4. Modifica il file `.env` con i tuoi valori:
+   - `VITE_API_URL`: URL del backend (default: http://localhost:3000)
+   - `VITE_GOOGLE_CLIENT_ID`: ID client Google per l'autenticazione
+
+## Sviluppo
+
+Per avviare il server di sviluppo:
+
+```bash
+npm run dev
+```
+
+L'applicazione sarà disponibile all'indirizzo http://localhost:5173
+
+## Build
+
+Per creare una build di produzione:
+
+```bash
+npm run build
+```
+
+I file di build saranno generati nella cartella `dist`
+
+## Preview Build
+
+Per visualizzare in anteprima la build di produzione:
+
+```bash
+npm run preview
+```
+
+## Struttura del Progetto
+
+```
+src/
+  ├── components/        # Componenti riutilizzabili
+  │   ├── auth/         # Componenti per l'autenticazione
+  │   ├── events/       # Componenti per gli eventi
+  │   ├── layout/       # Componenti di layout (Navbar, Footer, ecc.)
+  │   └── locations/    # Componenti per le location
+  ├── contexts/         # Context API
+  ├── pages/            # Pagine dell'applicazione
+  │   └── admin/        # Pagine della dashboard admin
+  ├── services/         # Servizi API e configurazione
+  └── utils/            # Utility functions
+```
+
+## Contribuire
+
+1. Crea un fork del repository
+2. Crea un branch per la tua feature (`git checkout -b feature/AmazingFeature`)
+3. Committa le tue modifiche (`git commit -m 'Add some AmazingFeature'`)
+4. Pusha al branch (`git push origin feature/AmazingFeature`)
+5. Apri una Pull Request
+
+## Licenza
+
+Questo progetto è sotto licenza MIT. Vedi il file `LICENSE` per maggiori dettagli.
