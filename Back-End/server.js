@@ -8,7 +8,6 @@ import {CloudinaryStorage} from "multer-storage-cloudinary"
 import passport from 'passport'
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import googleStrategy from './middlewares/oAuthMiddleware.js'
-import cookieParser from 'cookie-parser'
 
 // Verifica variabili d'ambiente essenziali
 const requiredEnvVars = [
@@ -39,7 +38,6 @@ import dashboardRouter from './routes/dashboardRoutes.js'
 // Middleware
 server.use(express.json())
 server.use(express.urlencoded({ extended: true }))
-server.use(cookieParser())
 server.use(cors({
     origin: [
         "http://localhost:5173", // Per lo sviluppo locale del frontend
@@ -48,8 +46,7 @@ server.use(cors({
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Set-Cookie']
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 server.use(passport.initialize())
 passport.use('google', googleStrategy)

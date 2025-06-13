@@ -183,16 +183,6 @@ authRouter.post('/login', async (req, res) => {
 
 // Google Auth Routes
 authRouter.get('/google',
-    (req, res, next) => {
-        // Salva l'URL di origine nella sessione o in un cookie
-        const origin = req.headers.origin || 'https://attoppa.vercel.app';
-        res.cookie('oauth_origin', origin, { 
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none'
-        });
-        next();
-    },
     passport.authenticate('google', { 
         scope: ['profile', 'email'],
         prompt: 'select_account'
@@ -206,9 +196,6 @@ authRouter.get('/google/callback',
     }),
     (req, res) => {
         try {
-            // Recupera l'URL di origine dal cookie
-            const origin = req.cookies.oauth_origin || 'https://attoppa.vercel.app';
-            
             // Genera il token
             const token = jwt.sign(
                 {
@@ -220,8 +207,8 @@ authRouter.get('/google/callback',
                 { expiresIn: '1h' }
             );
 
-            // Reindirizza al frontend con il token
-            res.redirect(`${origin}/auth-callback?token=${token}`);
+            // Reindirizza al frontend con il token (uso direttamente l'URL di Vercel)
+            res.redirect(`${process.env.FRONTEND_VERCEL_URL}/auth-callback?token=${token}`);
         } catch (error) {
             console.error('Errore durante la callback di Google:', error);
             res.redirect(`${process.env.FRONTEND_VERCEL_URL}/auth-callback?error=auth_failed`);
