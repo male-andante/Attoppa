@@ -1,0 +1,11 @@
+.home-responsive-container {
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+@media (min-width: 1200px) {
+  .home-responsive-container {
+    margin-left: 160px;
+    margin-right: 160px;
+  }
+} 
