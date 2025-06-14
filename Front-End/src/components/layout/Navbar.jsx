@@ -12,7 +12,7 @@ const NavigationBar = () => {
     };
 
     return (
-        <Navbar bg="dark" variant="dark" expand="lg" className="mb-4 bg-palestine-green">
+        <Navbar variant="dark" expand="lg" className="mb-4 bg-palestine-green">
             <Container>
                 <Navbar.Brand as={Link} to="/">Attoppa</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
