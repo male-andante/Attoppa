@@ -22,6 +22,12 @@ const googleStrategy = new GoogleStrategy({
                 sub: googleId 
             } = profile._json;
 
+            // Normalizza il nome per la generazione dell'username, fallback all'email se il nome non è utile
+            const baseForUsername = (name || email.split('@')[0])
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '') // Rimuove caratteri speciali, mantiene solo alfanumerici
+                .substring(0, 15); // Limita a 15 caratteri
+
             // Cerco prima per googleId, poi per email
             let user = await userModel.findOne({ 
                 $or: [
@@ -35,6 +41,16 @@ const googleStrategy = new GoogleStrategy({
                 if (!user.googleId) {
                     user.googleId = googleId;
                     user.verified = email_verified;
+                    // Assicurati che l'username sia presente anche per gli utenti esistenti
+                    if (!user.username) {
+                        let generatedUsername = baseForUsername;
+                        let counter = 1;
+                        while (await userModel.findOne({ username: generatedUsername })) {
+                            generatedUsername = `${baseForUsername}${counter}`;
+                            counter++;
+                        }
+                        user.username = generatedUsername;
+                    }
                     await user.save();
                 }
 
@@ -51,12 +67,20 @@ const googleStrategy = new GoogleStrategy({
             }
 
             // Se l'utente non esiste, lo creiamo
+            // Genera username unico prima di creare il nuovo utente
+            let generatedUsername = baseForUsername;
+            let counter = 1;
+            while (await userModel.findOne({ username: generatedUsername })) {
+                generatedUsername = `${baseForUsername}${counter}`;
+                counter++;
+            }
+
             const newUser = new userModel({
-                name: name,
+                name: name, // Usa il nome dal profilo Google
+                username: generatedUsername, // Assegna l'username unico generato
                 email: email.toLowerCase(),
                 googleId,
                 verified: email_verified,
-                // username verrà generato automaticamente dal pre-save hook
             });
 
             const savedUser = await newUser.save();
