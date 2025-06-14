@@ -130,7 +130,7 @@ const EventDetail = () => {
                 >
                   {isInterested ? 'Interessato' : 'Interessato?'}
                 </Button>
-                <Button variant="outline-primary" onClick={handleShare}>
+                <Button variant="primary" onClick={handleShare}>
                   <FaShareAlt className="me-2" />
                   Condividi
                 </Button>

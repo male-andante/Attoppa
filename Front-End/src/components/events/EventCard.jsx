@@ -77,7 +77,7 @@ const EventCard = ({ event, onInterested }) => {
             <Card.Footer className="bg-transparent border-top-0">
                 <Link 
                     to={`/events/${event._id}`}
-                    className="btn btn-outline-primary w-100"
+                    className="btn btn-primary w-100"
                 >
                     Dettagli
                 </Link>

@@ -129,7 +129,7 @@ const LocationDetail = () => {
                         <Button
                           as={Link}
                           to={`/events/${event.id}`}
-                          variant="outline-primary"
+                          variant="primary"
                           size="sm"
                         >
                           Dettagli
