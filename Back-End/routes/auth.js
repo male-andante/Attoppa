@@ -207,6 +207,9 @@ authRouter.get('/google/callback',
                 { expiresIn: '1h' }
             );
 
+            // Aggiungiamo un log per vedere l'URL di reindirizzamento
+            console.log('Reindirizzamento a:', `${process.env.FRONTEND_VERCEL_URL}/auth-callback?token=${token}`);
+
             // Reindirizza al frontend con il token (uso direttamente l'URL di Vercel)
             res.redirect(`${process.env.FRONTEND_VERCEL_URL}/auth-callback?token=${token}`);
         } catch (error) {
