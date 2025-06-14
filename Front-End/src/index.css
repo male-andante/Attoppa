@@ -104,8 +104,8 @@ button:focus-visible {
 
 /* Bootstrap Primary Button Overrides */
 .btn-primary {
-  background-color: var(--palestine-red);
-  border-color: var(--palestine-red);
+  background-color: var(--palestine-red) !important;
+  border-color: var(--palestine-red) !important;
   color: var(--palestine-white);
 }
 
@@ -113,8 +113,8 @@ button:focus-visible {
 .btn-primary:focus,
 .btn-primary:active,
 .btn-primary:visited {
-  background-color: var(--palestine-red-dark);
-  border-color: var(--palestine-red-dark);
+  background-color: var(--palestine-red-dark) !important;
+  border-color: var(--palestine-red-dark) !important;
   color: var(--palestine-white);
 }
 
@@ -134,13 +134,13 @@ button:focus-visible {
   }
   /* Ensure primary buttons retain their red color in light mode */
   .btn-primary {
-    background-color: var(--palestine-red);
-    border-color: var(--palestine-red);
+    background-color: var(--palestine-red) !important;
+    border-color: var(--palestine-red) !important;
     color: var(--palestine-white);
   }
   .btn-primary:hover {
-    background-color: var(--palestine-red-dark);
-    border-color: var(--palestine-red-dark);
+    background-color: var(--palestine-red-dark) !important;
+    border-color: var(--palestine-red-dark) !important;
   }
 }
 
