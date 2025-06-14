@@ -17,7 +17,6 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [googleError, setGoogleError] = useState(null);
 
     useEffect(() => {
         console.log('AuthProvider: Checking auth...');
@@ -106,28 +105,8 @@ export const AuthProvider = ({ children }) => {
         setIsAdmin(false);
     };
 
-    const loginWithGoogle = async () => {
-        setGoogleError(null);
-        try {
-            const response = await fetch(`${API_URL}/auth/google`, { 
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.message || "Errore durante il login con Google");
-            }
-            localStorage.setItem("token", data.token);
-            setUser(data.user);
-            setIsAuthenticated(true);
-            setIsAdmin(data.user.role === "admin");
-            return data;
-        } catch (err) {
-            setGoogleError(err.message || "Errore durante il login con Google");
-            throw err;
-        }
+    const loginWithGoogle = () => {
+        window.location.href = `${API_URL}/auth/google`;
     };
 
     const value = {
@@ -138,8 +117,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        loginWithGoogle,
-        googleError
+        loginWithGoogle
     };
 
     return (
