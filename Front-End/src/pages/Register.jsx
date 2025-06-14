@@ -12,6 +12,7 @@ const Register = () => {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const { register } = useAuth();
     const navigate = useNavigate();
 
@@ -26,6 +27,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccessMessage('');
 
         // Validazioni
         if (formData.password !== formData.confirmPassword) {
@@ -52,7 +54,10 @@ const Register = () => {
             };
 
             await register(userData);
-            navigate('/');
+            setSuccessMessage('Registrazione avvenuta con successo! Reindirizzamento alla home...');
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
         } catch (err) {
             console.error('Errore durante la registrazione:', err);
             setError(err.message || 'Errore durante la registrazione');
@@ -67,6 +72,7 @@ const Register = () => {
                 <Card.Body>
                     <h2 className="text-center mb-4">Registrazione</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
+                    {successMessage && <Alert variant="success">{successMessage}</Alert>}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
                             <Form.Label>Nome</Form.Label>
