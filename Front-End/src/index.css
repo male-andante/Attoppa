@@ -3,9 +3,17 @@
   line-height: 1.5;
   font-weight: 400;
 
+  /* Palestinian Flag Colors */
+  --palestine-red: #CC0000;
+  --palestine-red-dark: #A00000; /* Slightly darker red for hover/active */
+  --palestine-green: #005028;
+  --palestine-black: #000000;
+  --palestine-white: #FFFFFF;
+
+  /* Default text and background colors for dark theme (if applicable) */
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--palestine-white); /* Text on dark backgrounds */
+  background-color: var(--palestine-black); /* Global default background */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -29,7 +37,7 @@ html, body, #root {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--palestine-white); /* Default background for entire app */
   display: flex;
   flex-direction: column;
 }
@@ -82,6 +90,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.87);
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -93,15 +102,53 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Bootstrap Primary Button Overrides */
+.btn-primary {
+  background-color: var(--palestine-red);
+  border-color: var(--palestine-red);
+  color: var(--palestine-white);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:visited {
+  background-color: var(--palestine-red-dark);
+  border-color: var(--palestine-red-dark);
+  color: var(--palestine-white);
+}
+
+/* New class for green background */
+.bg-palestine-green {
+  background-color: var(--palestine-green) !important;
+}
+
+/* Adjust text colors based on color scheme / background */
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: var(--palestine-black); /* Text on light backgrounds */
+    background-color: var(--palestine-white); /* Light background */
   }
   a:hover {
-    color: #747bff;
+    color: var(--palestine-red); /* Adjust link hover color for light scheme */
   }
-  button {
-    background-color: #f9f9f9;
+  /* Ensure primary buttons retain their red color in light mode */
+  .btn-primary {
+    background-color: var(--palestine-red);
+    border-color: var(--palestine-red);
+    color: var(--palestine-white);
   }
+  .btn-primary:hover {
+    background-color: var(--palestine-red-dark);
+    border-color: var(--palestine-red-dark);
+  }
+}
+
+/* Explicitly set text colors for specific backgrounds */
+.text-on-dark {
+  color: var(--palestine-white) !important;
+}
+
+.text-on-light {
+  color: var(--palestine-black) !important;
 }
