@@ -29,7 +29,7 @@ const Footer = () => {
                 </Row>
                 <Row className="mt-3">
                     <Col className="text-center text-muted">
-                        <small>&copy; {new Date().getFullYear()} Attoppa. Tutti i diritti riservati.</small>
+                        <small>&copy; {new Date().getFullYear()} Attoppa. Tutti i diritti riservati. Made by male_andante</small>
                     </Col>
                 </Row>
             </Container>
