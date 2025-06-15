@@ -126,7 +126,6 @@ const EventDetail = () => {
                 <Button
                   variant={isInterested ? 'success' : 'outline-success'}
                   onClick={handleInterested}
-                  disabled={!user}
                 >
                   {isInterested ? 'Interessato' : 'Interessato?'}
                 </Button>
