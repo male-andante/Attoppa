@@ -195,29 +195,52 @@ authRouter.get('/google/callback',
         failureRedirect: '/login'
     }),
     (req, res) => {
+        console.log('=== GOOGLE CALLBACK START ===');
+        console.log('User object:', req.user);
+        console.log('User ID:', req.user?._id);
+        console.log('User email:', req.user?.email);
+        
         try {
             console.log('Google callback - User data:', req.user);
             
+            if (!req.user) {
+                console.error('No user object found in request');
+                return res.redirect(`${process.env.FRONTEND_VERCEL_URL}/auth-callback?error=no_user`);
+            }
+            
+            if (!req.user._id) {
+                console.error('No user ID found in user object');
+                return res.redirect(`${process.env.FRONTEND_VERCEL_URL}/auth-callback?error=no_user_id`);
+            }
+            
             // Genera il token
+            const tokenPayload = {
+                id: req.user._id, // Usa _id invece di id per essere coerente
+                email: req.user.email,
+                isAdmin: req.user.isAdmin
+            };
+            
+            console.log('Token payload:', tokenPayload);
+            
             const token = jwt.sign(
-                {
-                    id: req.user._id,
-                    email: req.user.email,
-                    isAdmin: req.user.isAdmin
-                },
+                tokenPayload,
                 jwtSecretKey,
                 { expiresIn: '1h' }
             );
 
+            console.log('Token generated:', token.substring(0, 50) + '...');
+
             // Aggiungiamo un log per vedere l'URL di reindirizzamento
-            console.log('Reindirizzamento a:', `${process.env.FRONTEND_VERCEL_URL}/auth-callback?token=${token}`);
+            const redirectUrl = `${process.env.FRONTEND_VERCEL_URL}/auth-callback?token=${token}`;
+            console.log('Reindirizzamento a:', redirectUrl);
 
             // Reindirizza al frontend con il token (uso direttamente l'URL di Vercel)
-            res.redirect(`${process.env.FRONTEND_VERCEL_URL}/auth-callback?token=${token}`);
+            res.redirect(redirectUrl);
         } catch (error) {
             console.error('Errore durante la callback di Google:', error);
             res.redirect(`${process.env.FRONTEND_VERCEL_URL}/auth-callback?error=auth_failed`);
         }
+        console.log('=== GOOGLE CALLBACK END ===');
     }
 );
 
