@@ -14,24 +14,25 @@ const authMiddleware = async (req, res, next) => {
         if(tokenBearer !== undefined){
             const token = tokenBearer.replace('Bearer ', '')
             const data = await verifyJWT(token)
-            console.log(data)
+            console.log('Token decodificato:', data)
             if(data.exp) {
                 const me = await userModel.findById(data.id)
                 if(me) {
                     req.user = me
                     next()
                 } else {
-                    res.status(401).send('Utente non trovato!')
+                    res.status(401).json({ message: 'Utente non trovato!' })
                 }
             } else {
-                res.status(401).send('Riprova il login!')
+                res.status(401).json({ message: 'Token scaduto! Riprova il login!' })
             }
         } else {
-            res.status(401).send('Token richiesto!')
+            res.status(401).json({ message: 'Token richiesto!' })
         } 
         
     } catch(err) {
-        next('Errore nel Token!')
+        console.error('Errore nel middleware di autenticazione:', err)
+        res.status(401).json({ message: 'Token non valido!' })
     }
 }
 
@@ -39,7 +40,7 @@ const authMiddleware = async (req, res, next) => {
 const verifyJWT = (token) => {
     return new Promise((res, rej) => {
         jwt.verify(token, jwtSecretKey, (err, data) => {
-            if(err) res(err)
+            if(err) rej(err)
             else res(data)
         })
     })
