@@ -196,10 +196,12 @@ authRouter.get('/google/callback',
     }),
     (req, res) => {
         try {
+            console.log('Google callback - User data:', req.user);
+            
             // Genera il token
             const token = jwt.sign(
                 {
-                    id: req.user.id,
+                    id: req.user._id,
                     email: req.user.email,
                     isAdmin: req.user.isAdmin
                 },
