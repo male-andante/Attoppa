@@ -232,6 +232,20 @@ authRouter.get('/verify', authMiddleware, (req, res) => {
     }
 });
 
+// Get Current User Route
+authRouter.get('/me', authMiddleware, async (req, res) => {
+    try {
+        // req.user è già popolato da authMiddleware
+        const userResponse = req.user.toObject();
+        delete userResponse.password; // Rimuoviamo la password dalla risposta
+        
+        res.status(200).json(userResponse);
+    } catch (error) {
+        console.error('Errore durante il recupero dati utente:', error);
+        res.status(500).json({ message: 'Errore durante il recupero dati utente' });
+    }
+});
+
 // Funzione Soluzione 2 creazione di un token
 const generateToken = (payload) => {
     return new Promise((res, rej) => {
