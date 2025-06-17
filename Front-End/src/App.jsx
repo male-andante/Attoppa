@@ -16,6 +16,7 @@ import Settings from './pages/Settings';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import EventForm from './pages/admin/EventForm';
 import LocationForm from './pages/admin/LocationForm';
+import AuthCallback from './pages/AuthCallback';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                         <Route path="/events/:id" element={<EventDetail />} />
                         <Route path="/locations" element={<Locations />} />
                         <Route path="/locations/:id" element={<LocationDetail />} />
+                        <Route path="/auth-callback" element={<AuthCallback />} />
 
                         {/* Route protette */}
                         <Route element={<PrivateRoute />}>
