@@ -98,6 +98,34 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
+    const loginWithToken = async (token) => {
+        try {
+            // Salva il token nel localStorage
+            localStorage.setItem('token', token);
+            
+            // Verifica il token e ottieni i dati dell'utente
+            const response = await fetch(`${API_URL}/auth/me`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+                setUser(userData);
+                setIsAuthenticated(true);
+                setIsAdmin(userData.role === 'admin');
+                return userData;
+            } else {
+                throw new Error('Token non valido');
+            }
+        } catch (error) {
+            console.error('Errore durante il login con token:', error);
+            localStorage.removeItem('token');
+            throw error;
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
@@ -115,6 +143,7 @@ export const AuthProvider = ({ children }) => {
         isAdmin,
         loading,
         login,
+        loginWithToken,
         register,
         logout,
         loginWithGoogle
