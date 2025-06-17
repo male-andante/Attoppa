@@ -54,16 +54,8 @@ const googleStrategy = new GoogleStrategy({
                     await user.save();
                 }
 
-                // Genero il token
-                const token = jwt.sign({
-                    id: user.id,
-                    username: user.username,
-                    name: user.name,
-                    email: user.email,
-                    isAdmin: user.isAdmin
-                }, jwtSecretKey, { expiresIn: '1h' });
-
-                return done(null, { accessToken: token });
+                // Restituisco l'utente completo invece del token
+                return done(null, user);
             }
 
             // Se l'utente non esiste, lo creiamo
@@ -85,16 +77,8 @@ const googleStrategy = new GoogleStrategy({
 
             const savedUser = await newUser.save();
 
-            // Genero il token
-            const token = jwt.sign({
-                id: savedUser.id,
-                username: savedUser.username,
-                name: savedUser.name,
-                email: savedUser.email,
-                isAdmin: savedUser.isAdmin
-            }, jwtSecretKey, { expiresIn: '1h' });
-
-            return done(null, { accessToken: token });
+            // Restituisco l'utente completo invece del token
+            return done(null, savedUser);
 
         } catch (error) {
             console.error('Errore durante l\'autenticazione Google:', error);
