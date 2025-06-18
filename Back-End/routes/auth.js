@@ -33,8 +33,8 @@ authRouter.post('/register', async (req, res) => {
         console.log('=== INIZIO REGISTRAZIONE ===');
         console.log('Dati ricevuti:', JSON.stringify(req.body, null, 2));
         
-        const { username, email, password, name } = req.body;
-        console.log('Dati estratti:', { username, email, name });
+        const { username, email, password, name, adminCode } = req.body;
+        console.log('Dati estratti:', { username, email, name, hasAdminCode: !!adminCode });
 
         // Validazione campi obbligatori
         if (!name) {
@@ -52,6 +52,13 @@ authRouter.post('/register', async (req, res) => {
         if (!username) {
             console.log('Errore: username mancante');
             return res.status(400).json({ message: 'Username generato non valido' });
+        }
+
+        // Verifica codice admin (se fornito)
+        const isAdmin = adminCode === process.env.ADMIN_SECRET_CODE;
+        if (adminCode && !isAdmin) {
+            console.log('Errore: codice admin non valido');
+            return res.status(400).json({ message: 'Codice admin non valido' });
         }
 
         // Verifica se l'utente esiste già
@@ -80,7 +87,7 @@ authRouter.post('/register', async (req, res) => {
             username,
             email,
             password: hashedPassword,
-            isAdmin: false
+            isAdmin: isAdmin
         });
 
         console.log('Tentativo di salvataggio utente:', JSON.stringify(user, null, 2));
@@ -285,6 +292,43 @@ const generateToken = (payload) => {
 authRouter.get('/dashboard', adminMiddleware, (req, res) => {
     // Solo gli admin possono accedere qui
     res.json({ message: 'Benvenuto nella dashboard. Inserisci il tuo evento o la tua location' });
+});
+
+// Endpoint per promuovere un utente ad admin (solo per admin esistenti)
+authRouter.post('/promote-admin', adminMiddleware, async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ message: 'Email richiesta' });
+        }
+
+        const user = await userModel.findOne({ email: email.toLowerCase() });
+        
+        if (!user) {
+            return res.status(404).json({ message: 'Utente non trovato' });
+        }
+
+        if (user.isAdmin) {
+            return res.status(400).json({ message: 'L\'utente è già admin' });
+        }
+
+        user.isAdmin = true;
+        await user.save();
+
+        res.json({ 
+            message: 'Utente promosso ad admin con successo',
+            user: {
+                name: user.name,
+                email: user.email,
+                username: user.username,
+                isAdmin: user.isAdmin
+            }
+        });
+    } catch (error) {
+        console.error('Errore durante la promozione ad admin:', error);
+        res.status(500).json({ message: 'Errore durante la promozione ad admin' });
+    }
 });
 
 // Export Router
