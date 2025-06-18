@@ -86,7 +86,7 @@ const Home = () => {
         );
     }
 
-    const locationNames = Object.keys(groupedEvents);
+    const locationNames = Object.keys(groupedEvents || {});
 
     return (
         <Container className="home-responsive-container">
@@ -94,7 +94,7 @@ const Home = () => {
             <div className="welcome-section">
                 <h1 className="display-6">
                     {isAuthenticated && user 
-                        ? `Benvenuto, ${user.name}!` 
+                        ? `Benvenuto, ${user.name || 'Utente'}!` 
                         : 'Benvenuto su Attoppa!'
                     }
                 </h1>
@@ -128,8 +128,8 @@ const Home = () => {
                     
                     {/* Paginazione */}
                     <Pagination
-                        currentPage={pagination.currentPage || 1}
-                        totalPages={pagination.totalPages || 1}
+                        currentPage={pagination?.currentPage || 1}
+                        totalPages={pagination?.totalPages || 1}
                         onPageChange={handlePageChange}
                     />
                 </>

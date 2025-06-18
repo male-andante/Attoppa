@@ -9,6 +9,9 @@ const EventCard = ({ event, onInterested }) => {
     const [loading, setLoading] = useState(false);
 
     const eventId = event._id || event.id;
+    
+    // Gestione sicura per isInterested
+    const isInterested = event.isInterested || false;
 
     const formatDate = (dateString) => {
         const options = { 
@@ -38,8 +41,8 @@ const EventCard = ({ event, onInterested }) => {
         <Card className="h-100 shadow-sm">
             <Card.Body>
                 <div className="d-flex justify-content-between align-items-start mb-2">
-                    <Card.Title className="mb-0">{event.title || event.name}</Card.Title>
-                    {event.price === 0 ? (
+                    <Card.Title className="mb-0">{event.title || event.name || 'Evento'}</Card.Title>
+                    {(event.price === 0 || event.price === undefined) ? (
                         <Badge bg="success">Gratuito</Badge>
                     ) : (
                         <Badge bg="primary">{event.price}€</Badge>
@@ -47,26 +50,28 @@ const EventCard = ({ event, onInterested }) => {
                 </div>
 
                 <Card.Subtitle className="mb-2 text-muted">
-                    {formatDate(event.startDate)} - {event.startTime}
+                    {event.startDate ? formatDate(event.startDate) : 'Data non disponibile'} - {event.startTime || 'Orario non disponibile'}
                 </Card.Subtitle>
 
                 <Card.Text className="text-truncate">
-                    {event.description}
+                    {event.description || 'Nessuna descrizione disponibile'}
                 </Card.Text>
 
                 <div className="d-flex justify-content-between align-items-center mt-3">
-                    <Link 
-                        to={`/locations/${event.location._id || event.location.id}`}
-                        className="text-decoration-none"
-                    >
-                        <small className="text-muted">
-                            📍 {event.location.name}, {event.location.city}
-                        </small>
-                    </Link>
+                    {event.location && (
+                        <Link 
+                            to={`/locations/${event.location._id || event.location.id}`}
+                            className="text-decoration-none"
+                        >
+                            <small className="text-muted">
+                                📍 {event.location.name || 'Location'}, {event.location.city || 'Città'}
+                            </small>
+                        </Link>
+                    )}
 
                     {isAuthenticated && (
                         <Button
-                            variant={event.isInterested ? "link" : "link"}
+                            variant="link"
                             size="sm"
                             onClick={handleInterested}
                             disabled={loading}
@@ -75,7 +80,7 @@ const EventCard = ({ event, onInterested }) => {
                         >
                             <FaHeart 
                                 size={20} 
-                                fill={event.isInterested ? '#dc3545' : 'none'} 
+                                fill={isInterested ? '#dc3545' : 'none'} 
                                 stroke="#dc3545"
                                 strokeWidth={2}
                             />

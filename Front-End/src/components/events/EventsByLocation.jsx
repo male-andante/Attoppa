@@ -3,7 +3,12 @@ import { Link } from 'react-router-dom';
 import EventCard from './EventCard';
 
 const EventsByLocation = ({ locationData, onInterested }) => {
-    const { location, events } = locationData;
+    const { location, events } = locationData || {};
+
+    // Gestione sicura per evitare errori se locationData è undefined
+    if (!location || !events) {
+        return null;
+    }
 
     return (
         <Card className="mb-4 shadow-sm">
@@ -13,10 +18,10 @@ const EventsByLocation = ({ locationData, onInterested }) => {
                         to={`/locations/${location._id || location.id}`}
                         className="text-white text-decoration-none"
                     >
-                        📍 {location.name}
+                        📍 {location.name || 'Location'}
                     </Link>
                 </h4>
-                <small>{events.length} eventi</small>
+                <small>{events.length || 0} eventi</small>
             </Card.Header>
             <Card.Body>
                 <Row className="g-3">
