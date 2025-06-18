@@ -189,12 +189,17 @@ authRouter.post('/login', async (req, res) => {
 });
 
 // Google Auth Routes
-authRouter.get('/google',
-    passport.authenticate('google', { 
-        scope: ['profile', 'email'],
-        prompt: 'select_account'
-    })
-);
+authRouter.get('/google', (req, res, next) => {
+    console.log('=== GOOGLE AUTH INIT ===');
+    console.log('Google Client ID:', process.env.GOOGLE_CLIENT_ID ? 'Presente' : 'Mancante');
+    console.log('Google Client Secret:', process.env.GOOGLE_CLIENT_SECRET ? 'Presente' : 'Mancante');
+    console.log('Google Callback URL:', process.env.GOOGLE_CALLBACK_URL);
+    console.log('Frontend URL:', process.env.FRONTEND_VERCEL_URL);
+    next();
+}, passport.authenticate('google', { 
+    scope: ['profile', 'email'],
+    prompt: 'select_account'
+}));
 
 authRouter.get('/google/callback',
     passport.authenticate('google', { 
