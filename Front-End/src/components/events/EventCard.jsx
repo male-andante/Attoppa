@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
 
+// Componente EventCard con icona cuore per l'interesse - VERSIONE AGGIORNATA
 const EventCard = ({ event, onInterested }) => {
     const { isAuthenticated } = useAuth();
     const [loading, setLoading] = useState(false);
