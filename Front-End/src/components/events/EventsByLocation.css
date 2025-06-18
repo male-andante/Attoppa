@@ -1,0 +1,38 @@
+.events-by-location-section {
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+.events-by-location-header {
+  background: none;
+  color: #222;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.events-by-location-header h4 {
+  color: #222;
+  font-weight: 600;
+}
+
+.events-by-location-header a {
+  color: #222;
+}
+
+.events-by-location-header a:hover {
+  color: #dc3545;
+}
+
+.events-by-location-body {
+  padding: 0;
+} 

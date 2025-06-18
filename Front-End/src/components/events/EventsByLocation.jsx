@@ -1,6 +1,7 @@
 import { Card, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import EventCard from './EventCard';
+import './EventsByLocation.css';
 
 const EventsByLocation = ({ locationData, onInterested }) => {
     const { location, events } = locationData || {};
@@ -15,13 +16,13 @@ const EventsByLocation = ({ locationData, onInterested }) => {
     const locationName = location.name || 'Location';
 
     return (
-        <Card className="mb-4 shadow-sm">
-            <Card.Header className="bg-primary text-white">
+        <div className="events-by-location-section mb-4">
+            <div className="events-by-location-header px-3 py-2">
                 <h4 className="mb-0">
                     {locationId ? (
                         <Link 
                             to={`/locations/${locationId}`}
-                            className="text-white text-decoration-none"
+                            className="text-decoration-none"
                         >
                             📍 {locationName}
                         </Link>
@@ -30,8 +31,8 @@ const EventsByLocation = ({ locationData, onInterested }) => {
                     )}
                 </h4>
                 <small>{events.length || 0} eventi</small>
-            </Card.Header>
-            <Card.Body>
+            </div>
+            <div className="events-by-location-body">
                 <Row className="g-3">
                     {events.map(event => (
                         <Col key={event._id || event.id} xs={12} md={6} lg={4}>
@@ -42,8 +43,8 @@ const EventsByLocation = ({ locationData, onInterested }) => {
                         </Col>
                     ))}
                 </Row>
-            </Card.Body>
-        </Card>
+            </div>
+        </div>
     );
 };
 
