@@ -152,20 +152,7 @@ const EventDetail = () => {
         </Col>
 
         <Col lg={4}>
-          {event.interestedUsers?.length > 0 && (
-            <Card className="mt-4">
-              <Card.Body>
-                <Card.Title>Utenti Interessati</Card.Title>
-                <div className="d-flex flex-wrap gap-2">
-                  {event.interestedUsers.map(userId => (
-                    <Badge key={userId} bg="secondary">
-                      {userId}
-                    </Badge>
-                  ))}
-                </div>
-              </Card.Body>
-            </Card>
-          )}
+          {/* Sezione Utenti Interessati rimossa */}
         </Col>
       </Row>
     </Container>
