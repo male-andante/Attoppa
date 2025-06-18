@@ -1,4 +1,4 @@
-import { Pagination as BootstrapPagination } from 'react-bootstrap';
+import { Button, ButtonGroup } from 'react-bootstrap';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     const renderPageNumbers = () => {
@@ -14,13 +14,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
         for (let i = startPage; i <= endPage; i++) {
             pages.push(
-                <BootstrapPagination.Item
+                <Button
                     key={i}
-                    active={i === currentPage}
+                    variant={i === currentPage ? "primary" : "outline-primary"}
+                    size="sm"
                     onClick={() => onPageChange(i)}
                 >
                     {i}
-                </BootstrapPagination.Item>
+                </Button>
             );
         }
         
@@ -31,27 +32,43 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
     return (
         <div className="d-flex justify-content-center mt-4">
-            <BootstrapPagination>
-                <BootstrapPagination.First
+            <ButtonGroup>
+                <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => onPageChange(1)}
                     disabled={currentPage === 1}
-                />
-                <BootstrapPagination.Prev
+                >
+                    «
+                </Button>
+                <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                />
+                >
+                    ‹
+                </Button>
                 
                 {renderPageNumbers()}
                 
-                <BootstrapPagination.Next
+                <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                />
-                <BootstrapPagination.Last
+                >
+                    ›
+                </Button>
+                <Button
+                    variant="outline-primary"
+                    size="sm"
                     onClick={() => onPageChange(totalPages)}
                     disabled={currentPage === totalPages}
-                />
-            </BootstrapPagination>
+                >
+                    »
+                </Button>
+            </ButtonGroup>
         </div>
     );
 };
