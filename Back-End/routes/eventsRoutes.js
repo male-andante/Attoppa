@@ -43,7 +43,7 @@ eventRouter.get('/', async (req, res) => {
     }
 })
 
-// GET eventi raggruppati per location (DEVE ESSERE PRIMA DI /:id)
+// GET eventi raggruppati per location (DEVE ESSERE PRIMA DI /:id) - VERSIONE AGGIORNATA
 eventRouter.get('/grouped-by-location', async (req, res) => {
     try {
         console.log('Endpoint /grouped-by-location chiamato');
