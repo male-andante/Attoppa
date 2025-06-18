@@ -46,19 +46,34 @@ eventRouter.get('/', async (req, res) => {
 // GET eventi raggruppati per location (DEVE ESSERE PRIMA DI /:id)
 eventRouter.get('/grouped-by-location', async (req, res) => {
     try {
+        console.log('Endpoint /grouped-by-location chiamato');
+        
         const { page = 1, limit = 10 } = req.query;
+        console.log('Parametri ricevuti:', { page, limit });
+        
         const skip = (page - 1) * limit;
+        console.log('Skip calcolato:', skip);
 
         // Ottieni tutti gli eventi popolati con le location
+        console.log('Recupero eventi dal database...');
         const events = await Event.find()
             .populate('location')
             .sort({ startDate: 1 })
             .skip(skip)
             .limit(parseInt(limit));
+        
+        console.log('Eventi recuperati:', events.length);
 
         // Raggruppa gli eventi per location
         const groupedEvents = {};
-        events.forEach(event => {
+        events.forEach((event, index) => {
+            console.log(`Processando evento ${index + 1}:`, {
+                eventId: event._id,
+                eventName: event.name,
+                hasLocation: !!event.location,
+                locationName: event.location?.name
+            });
+            
             // Gestisci il caso in cui l'evento non ha una location
             if (!event.location) {
                 const locationName = 'Location non specificata';
@@ -82,11 +97,13 @@ eventRouter.get('/grouped-by-location', async (req, res) => {
             groupedEvents[locationName].events.push(event);
         });
 
+        console.log('Eventi raggruppati:', Object.keys(groupedEvents));
+
         // Conta il totale degli eventi per la paginazione
         const totalEvents = await Event.countDocuments();
         const totalPages = Math.ceil(totalEvents / limit);
 
-        res.status(200).json({
+        const response = {
             groupedEvents,
             pagination: {
                 currentPage: parseInt(page),
@@ -95,9 +112,13 @@ eventRouter.get('/grouped-by-location', async (req, res) => {
                 hasNextPage: page < totalPages,
                 hasPrevPage: page > 1
             }
-        });
+        };
+
+        console.log('Risposta preparata, invio...');
+        res.status(200).json(response);
     } catch (err) {
         console.error('Errore nel recupero eventi raggruppati:', err);
+        console.error('Stack trace:', err.stack);
         res.status(500).json({ error: err.message });
     }
 });
