@@ -14,6 +14,8 @@ const eventSchema = new mongoose.Schema({
     price: { type: Number, required: true },
     isFree: { type: Boolean, required: true, default: false },
     isOnline: { type: Boolean, required: true, default: false },
+    // Array di utenti interessati all'evento
+    interestedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }]
 }, { timestamps: true }); // Aggiungo timestamps per createdAt e updatedAt
 
 

@@ -2,10 +2,13 @@ import { Card, Button, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
+import { FaHeart } from 'react-icons/fa';
 
 const EventCard = ({ event, onInterested }) => {
     const { isAuthenticated } = useAuth();
     const [loading, setLoading] = useState(false);
+
+    const eventId = event._id || event.id;
 
     const formatDate = (dateString) => {
         const options = { 
@@ -23,7 +26,7 @@ const EventCard = ({ event, onInterested }) => {
         if (!isAuthenticated) return;
         try {
             setLoading(true);
-            await onInterested(event._id);
+            await onInterested(eventId);
         } catch (err) {
             console.error('Errore durante l\'aggiornamento:', err);
         } finally {
@@ -35,7 +38,7 @@ const EventCard = ({ event, onInterested }) => {
         <Card className="h-100 shadow-sm">
             <Card.Body>
                 <div className="d-flex justify-content-between align-items-start mb-2">
-                    <Card.Title className="mb-0">{event.title}</Card.Title>
+                    <Card.Title className="mb-0">{event.title || event.name}</Card.Title>
                     {event.price === 0 ? (
                         <Badge bg="success">Gratuito</Badge>
                     ) : (
@@ -53,7 +56,7 @@ const EventCard = ({ event, onInterested }) => {
 
                 <div className="d-flex justify-content-between align-items-center mt-3">
                     <Link 
-                        to={`/locations/${event.location._id}`}
+                        to={`/locations/${event.location._id || event.location.id}`}
                         className="text-decoration-none"
                     >
                         <small className="text-muted">
@@ -63,12 +66,19 @@ const EventCard = ({ event, onInterested }) => {
 
                     {isAuthenticated && (
                         <Button
-                            variant={event.isInterested ? "success" : "outline-success"}
+                            variant={event.isInterested ? "link" : "link"}
                             size="sm"
                             onClick={handleInterested}
                             disabled={loading}
+                            className="p-0 border-0"
+                            style={{ color: '#dc3545' }}
                         >
-                            {loading ? '...' : event.isInterested ? 'Interessato' : 'Interessato?'}
+                            <FaHeart 
+                                size={20} 
+                                fill={event.isInterested ? '#dc3545' : 'none'} 
+                                stroke="#dc3545"
+                                strokeWidth={2}
+                            />
                         </Button>
                     )}
                 </div>
@@ -76,7 +86,7 @@ const EventCard = ({ event, onInterested }) => {
 
             <Card.Footer className="bg-transparent border-top-0">
                 <Link 
-                    to={`/events/${event._id}`}
+                    to={`/events/${eventId}`}
                     className="btn btn-primary w-100"
                 >
                     Dettagli

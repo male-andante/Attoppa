@@ -71,6 +71,49 @@ eventRouter.get('/interested', authMiddleware, async (req, res) => {
     }
 });
 
+// POST - Toggle interesse per un evento
+eventRouter.post('/:id/interested', authMiddleware, async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const userId = req.user._id;
+
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Evento non trovato' });
+        }
+
+        // Inizializza interestedUsers se non esiste
+        if (!event.interestedUsers) {
+            event.interestedUsers = [];
+        }
+
+        // Controlla se l'utente è già interessato
+        const isInterested = event.interestedUsers.includes(userId);
+
+        if (isInterested) {
+            // Rimuovi l'utente dalla lista degli interessati
+            event.interestedUsers = event.interestedUsers.filter(id => id.toString() !== userId.toString());
+        } else {
+            // Aggiungi l'utente alla lista degli interessati
+            event.interestedUsers.push(userId);
+        }
+
+        await event.save();
+        
+        // Popola la location prima di restituire la risposta
+        const updatedEvent = await Event.findById(eventId).populate('location');
+        
+        res.status(200).json({
+            message: isInterested ? 'Interesse rimosso' : 'Interesse aggiunto',
+            event: updatedEvent,
+            isInterested: !isInterested
+        });
+    } catch (err) {
+        console.error('Errore nel toggle dell\'interesse:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 //POST
 eventRouter.post('/', async (req, res) => {
     try {
