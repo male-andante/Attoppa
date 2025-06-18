@@ -58,7 +58,7 @@ const EventCard = ({ event, onInterested }) => {
                 </Card.Text>
 
                 <div className="d-flex justify-content-between align-items-center mt-3">
-                    {event.location && (
+                    {event.location && event.location._id ? (
                         <Link 
                             to={`/locations/${event.location._id || event.location.id}`}
                             className="text-decoration-none"
@@ -67,6 +67,14 @@ const EventCard = ({ event, onInterested }) => {
                                 📍 {event.location.name || 'Location'}, {event.location.city || 'Città'}
                             </small>
                         </Link>
+                    ) : event.location ? (
+                        <small className="text-muted">
+                            📍 {event.location.name || 'Location'}
+                        </small>
+                    ) : (
+                        <small className="text-muted">
+                            📍 Location non specificata
+                        </small>
                     )}
 
                     {isAuthenticated && (

@@ -10,16 +10,24 @@ const EventsByLocation = ({ locationData, onInterested }) => {
         return null;
     }
 
+    // Gestisci il caso di location senza ID (es. "Location non specificata")
+    const locationId = location._id || location.id;
+    const locationName = location.name || 'Location';
+
     return (
         <Card className="mb-4 shadow-sm">
             <Card.Header className="bg-primary text-white">
                 <h4 className="mb-0">
-                    <Link 
-                        to={`/locations/${location._id || location.id}`}
-                        className="text-white text-decoration-none"
-                    >
-                        📍 {location.name || 'Location'}
-                    </Link>
+                    {locationId ? (
+                        <Link 
+                            to={`/locations/${locationId}`}
+                            className="text-white text-decoration-none"
+                        >
+                            📍 {locationName}
+                        </Link>
+                    ) : (
+                        <span>📍 {locationName}</span>
+                    )}
                 </h4>
                 <small>{events.length || 0} eventi</small>
             </Card.Header>

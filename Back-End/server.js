@@ -42,6 +42,8 @@ server.use(cors({
     origin: [
         "http://localhost:5173", // Per lo sviluppo locale del frontend
         "https://attoppa.vercel.app", // URL di produzione su Vercel
+        "https://attoppa-cddppvkuy-andreas-projects-10bae491.vercel.app", // URL specifico del deployment
+        /^https:\/\/.*\.vercel\.app$/, // Pattern per tutti i domini Vercel
         process.env.FRONTEND_VERCEL_URL // URL di produzione alternativo
     ],
     credentials: true,

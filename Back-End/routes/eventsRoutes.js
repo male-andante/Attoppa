@@ -302,7 +302,20 @@ eventRouter.get('/grouped-by-location', async (req, res) => {
         // Raggruppa gli eventi per location
         const groupedEvents = {};
         events.forEach(event => {
-            const locationName = event.location.name;
+            // Gestisci il caso in cui l'evento non ha una location
+            if (!event.location) {
+                const locationName = 'Location non specificata';
+                if (!groupedEvents[locationName]) {
+                    groupedEvents[locationName] = {
+                        location: { name: locationName, city: 'N/A' },
+                        events: []
+                    };
+                }
+                groupedEvents[locationName].events.push(event);
+                return;
+            }
+
+            const locationName = event.location.name || 'Location senza nome';
             if (!groupedEvents[locationName]) {
                 groupedEvents[locationName] = {
                     location: event.location,
