@@ -1,11 +1,64 @@
 .home-responsive-container {
   margin-left: 24px;
   margin-right: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 @media (min-width: 1200px) {
   .home-responsive-container {
     margin-left: 160px;
     margin-right: 160px;
+  }
+}
+
+/* Stili per il componente di benvenuto */
+.welcome-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.welcome-section h1 {
+  color: #495057;
+  margin-bottom: 1rem;
+}
+
+.welcome-section .lead {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-section a {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.welcome-section a:hover {
+  color: #0056b3;
+  text-decoration: underline !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .home-responsive-container {
+    padding: 10px;
+  }
+  
+  .welcome-section {
+    padding: 1.5rem;
+  }
+  
+  .welcome-section h1 {
+    font-size: 1.5rem;
+  }
+  
+  .welcome-section .lead {
+    font-size: 1rem;
   }
 } 

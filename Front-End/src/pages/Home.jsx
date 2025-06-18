@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Alert, Spinner, Jumbotron } from 'react-bootstrap';
+import { Container, Alert, Spinner } from 'react-bootstrap';
 import { useAuth } from '../contexts/AuthContext';
 import { getEventsGroupedByLocation, toggleInterested } from '../services/events';
 import EventsByLocation from '../components/events/EventsByLocation';
@@ -91,7 +91,7 @@ const Home = () => {
     return (
         <Container className="home-responsive-container">
             {/* Messaggio di benvenuto */}
-            <Jumbotron className="bg-light p-4 rounded mb-4">
+            <div className="welcome-section">
                 <h1 className="display-6">
                     {isAuthenticated && user 
                         ? `Benvenuto, ${user.name}!` 
@@ -109,7 +109,7 @@ const Home = () => {
                         <a href="/login" className="text-decoration-none">Accedi</a> per salvare i tuoi eventi preferiti!
                     </p>
                 )}
-            </Jumbotron>
+            </div>
 
             {/* Eventi raggruppati per location */}
             {locationNames.length === 0 ? (
