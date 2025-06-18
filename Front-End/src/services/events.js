@@ -28,6 +28,11 @@ export const getEvents = async () => {
     return fetchWithAuth('/events');
 };
 
+// Ottieni eventi raggruppati per location
+export const getEventsGroupedByLocation = async (page = 1, limit = 10) => {
+    return fetchWithAuth(`/events/grouped-by-location?page=${page}&limit=${limit}`);
+};
+
 // Ottieni dettagli evento
 export const getEventById = async (id) => {
     return fetchWithAuth(`/events/${id}`);

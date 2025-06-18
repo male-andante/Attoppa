@@ -286,4 +286,50 @@ eventRouter.delete('/:id', async (req, res) => {
     }
 })
 
+// GET eventi raggruppati per location
+eventRouter.get('/grouped-by-location', async (req, res) => {
+    try {
+        const { page = 1, limit = 10 } = req.query;
+        const skip = (page - 1) * limit;
+
+        // Ottieni tutti gli eventi popolati con le location
+        const events = await Event.find()
+            .populate('location')
+            .sort({ startDate: 1 })
+            .skip(skip)
+            .limit(parseInt(limit));
+
+        // Raggruppa gli eventi per location
+        const groupedEvents = {};
+        events.forEach(event => {
+            const locationName = event.location.name;
+            if (!groupedEvents[locationName]) {
+                groupedEvents[locationName] = {
+                    location: event.location,
+                    events: []
+                };
+            }
+            groupedEvents[locationName].events.push(event);
+        });
+
+        // Conta il totale degli eventi per la paginazione
+        const totalEvents = await Event.countDocuments();
+        const totalPages = Math.ceil(totalEvents / limit);
+
+        res.status(200).json({
+            groupedEvents,
+            pagination: {
+                currentPage: parseInt(page),
+                totalPages,
+                totalEvents,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
+        });
+    } catch (err) {
+        console.error('Errore nel recupero eventi raggruppati:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 export default eventRouter

@@ -1,25 +1,29 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import EventCard from '../components/events/EventCard';
-import { getEvents, toggleInterested } from '../services/events';
-import './Home.css'; // Importo lo stile custom
+import { Container, Alert, Spinner, Jumbotron } from 'react-bootstrap';
+import { useAuth } from '../contexts/AuthContext';
+import { getEventsGroupedByLocation, toggleInterested } from '../services/events';
+import EventsByLocation from '../components/events/EventsByLocation';
+import Pagination from '../components/common/Pagination';
+import './Home.css';
 
 const Home = () => {
-    const [events, setEvents] = useState([]);
+    const { user, isAuthenticated } = useAuth();
+    const [groupedEvents, setGroupedEvents] = useState({});
+    const [pagination, setPagination] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
-    // Carica tutti gli eventi all'avvio del componente
+    // Carica gli eventi raggruppati per location
     useEffect(() => {
         const loadEvents = async () => {
             try {
                 setLoading(true);
                 setError(null);
                 
-                // Chiamo sempre getEvents per recuperare tutti gli eventi
-                const data = await getEvents();
-                
-                setEvents(data);
+                const data = await getEventsGroupedByLocation(currentPage, 12);
+                setGroupedEvents(data.groupedEvents);
+                setPagination(data.pagination);
             } catch (err) {
                 console.error('Errore nel caricamento degli eventi:', err);
                 setError('Errore nel caricamento degli eventi.');
@@ -28,21 +32,40 @@ const Home = () => {
             }
         };
 
-        loadEvents(); // Eseguo la funzione di caricamento all'avvio
-    }, []); // Dipendenze vuote: eseguo solo una volta al mount
+        loadEvents();
+    }, [currentPage]);
 
     const handleInterested = async (eventId) => {
         try {
-            const updatedEvent = await toggleInterested(eventId);
-            setEvents(events.map(event => 
-                event._id === eventId 
-                    ? { ...event, isInterested: updatedEvent.isInterested }
-                    : event
-            ));
+            await toggleInterested(eventId);
+            
+            // Aggiorna lo stato locale per riflettere il cambiamento
+            setGroupedEvents(prev => {
+                const updated = { ...prev };
+                Object.keys(updated).forEach(locationName => {
+                    updated[locationName].events = updated[locationName].events.map(event => {
+                        if ((event._id || event.id) === eventId) {
+                            return {
+                                ...event,
+                                isInterested: !event.isInterested,
+                                interestedUsers: event.isInterested
+                                    ? event.interestedUsers?.filter(id => id !== user?.id) || []
+                                    : [...(event.interestedUsers || []), user?.id]
+                            };
+                        }
+                        return event;
+                    });
+                });
+                return updated;
+            });
         } catch (err) {
             console.error('Errore nell\'aggiornamento dell\'interesse:', err);
-            // Potresti voler mostrare un messaggio all'utente qui
         }
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        window.scrollTo(0, 0); // Scroll to top when changing page
     };
 
     if (loading) {
@@ -63,25 +86,53 @@ const Home = () => {
         );
     }
 
+    const locationNames = Object.keys(groupedEvents);
+
     return (
         <Container className="home-responsive-container">
-            <h1 className="mb-4">Tutti gli eventi</h1>
+            {/* Messaggio di benvenuto */}
+            <Jumbotron className="bg-light p-4 rounded mb-4">
+                <h1 className="display-6">
+                    {isAuthenticated && user 
+                        ? `Benvenuto, ${user.name}!` 
+                        : 'Benvenuto su Attoppa!'
+                    }
+                </h1>
+                <p className="lead">
+                    {isAuthenticated 
+                        ? 'Questi sono gli eventi per te:'
+                        : 'Scopri i migliori eventi techno della tua zona!'
+                    }
+                </p>
+                {!isAuthenticated && (
+                    <p className="text-muted">
+                        <a href="/login" className="text-decoration-none">Accedi</a> per salvare i tuoi eventi preferiti!
+                    </p>
+                )}
+            </Jumbotron>
 
-            {events.length === 0 ? (
+            {/* Eventi raggruppati per location */}
+            {locationNames.length === 0 ? (
                 <Alert variant="info">
-                    Nessun evento trovato.
+                    Nessun evento disponibile al momento.
                 </Alert>
             ) : (
-                <Row className="g-4">
-                    {events.map(event => (
-                        <Col key={event._id} xs={12} lg={3}>
-                            <EventCard 
-                                event={event}
-                                onInterested={handleInterested}
-                            />
-                        </Col>
+                <>
+                    {locationNames.map(locationName => (
+                        <EventsByLocation
+                            key={locationName}
+                            locationData={groupedEvents[locationName]}
+                            onInterested={handleInterested}
+                        />
                     ))}
-                </Row>
+                    
+                    {/* Paginazione */}
+                    <Pagination
+                        currentPage={pagination.currentPage || 1}
+                        totalPages={pagination.totalPages || 1}
+                        onPageChange={handlePageChange}
+                    />
+                </>
             )}
         </Container>
     );
