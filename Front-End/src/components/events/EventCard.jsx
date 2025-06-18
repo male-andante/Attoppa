@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useState } from 'react';
 import { FaHeart } from 'react-icons/fa';
+import './EventCard.css'; // Importa il CSS custom
 
 // Componente EventCard con icona cuore per l'interesse - VERSIONE AGGIORNATA
 const EventCard = ({ event, onInterested }) => {
     const { isAuthenticated } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [animate, setAnimate] = useState(false);
 
     const eventId = event._id || event.id;
     
@@ -30,16 +32,36 @@ const EventCard = ({ event, onInterested }) => {
         if (!isAuthenticated) return;
         try {
             setLoading(true);
+            setAnimate(true);
             await onInterested(eventId);
         } catch (err) {
             console.error('Errore durante l\'aggiornamento:', err);
         } finally {
             setLoading(false);
+            setTimeout(() => setAnimate(false), 400); // Reset animazione
         }
     };
 
     return (
-        <Card className="h-100 shadow-sm">
+        <Card className="h-100 shadow-sm position-relative">
+            {/* Cuore in alto a destra */}
+            {isAuthenticated && (
+                <button
+                    className={`eventcard-heart-btn${animate ? ' animate' : ''}`}
+                    onClick={handleInterested}
+                    disabled={loading}
+                    aria-label={isInterested ? 'Rimuovi interesse' : 'Segna come interessato'}
+                    type="button"
+                >
+                    <FaHeart
+                        size={26}
+                        fill={isInterested ? '#dc3545' : 'none'}
+                        stroke={isInterested ? '#dc3545' : '#888'}
+                        strokeWidth={2}
+                        style={{ filter: isInterested ? 'drop-shadow(0 0 2px #dc3545)' : 'none' }}
+                    />
+                </button>
+            )}
             <Card.Body>
                 <div className="d-flex justify-content-between align-items-start mb-2">
                     <Card.Title className="mb-0">{event.title || event.name || 'Evento'}</Card.Title>
@@ -76,24 +98,6 @@ const EventCard = ({ event, onInterested }) => {
                         <small className="text-muted">
                             📍 Location non specificata
                         </small>
-                    )}
-
-                    {isAuthenticated && (
-                        <Button
-                            variant="link"
-                            size="sm"
-                            onClick={handleInterested}
-                            disabled={loading}
-                            className="p-0 border-0"
-                            style={{ color: '#dc3545' }}
-                        >
-                            <FaHeart 
-                                size={20} 
-                                fill={isInterested ? '#dc3545' : 'none'} 
-                                stroke="#dc3545"
-                                strokeWidth={2}
-                            />
-                        </Button>
                     )}
                 </div>
             </Card.Body>
