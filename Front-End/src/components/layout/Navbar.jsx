@@ -30,7 +30,7 @@ const NavigationBar = () => {
                             <>
                                 <Nav.Link as={Link} to="/profile">Profilo</Nav.Link>
                                 {isAdmin && (
-                                    <Nav.Link as={Link} to="/admin">Dashboard</Nav.Link>
+                                    <Nav.Link as={Link} to="/admin">Aggiungi il tuo evento</Nav.Link>
                                 )}
                                 <Button 
                                     variant="primary" 
