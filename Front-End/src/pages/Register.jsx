@@ -13,7 +13,7 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    const { register } = useAuth();
+    const { register, login } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -54,6 +54,8 @@ const Register = () => {
             };
 
             await register(userData);
+            // Effettua login automatico dopo la registrazione
+            await login(formData.email, formData.password);
             setSuccessMessage('Registrazione avvenuta con successo! Reindirizzamento alla home...');
             setTimeout(() => {
                 navigate('/');
