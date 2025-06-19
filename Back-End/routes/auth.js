@@ -115,9 +115,12 @@ authRouter.post('/register', async (req, res) => {
         console.log('=== REGISTRAZIONE COMPLETATA CON SUCCESSO ===');
         // Restituisco la risposta con il token e l'indicazione se è admin
         return res.status(201).json({
-            user: userResponse,
-            token,
-            redirectTo: userSaved.isAdmin ? '/dashboard' : '/'
+            status: 'success',
+            data: {
+                user: userResponse,
+                token,
+                redirectTo: userSaved.isAdmin ? '/dashboard' : '/'
+            }
         });
     } catch (error) {
         console.error('=== ERRORE DURANTE LA REGISTRAZIONE ===');
