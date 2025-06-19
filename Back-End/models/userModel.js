@@ -5,9 +5,10 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: false }, // Non richiesto per utenti Google
     email: { type: String, required: true, unique: true },
-    isAdmin: { type: Boolean, required: true, default: false },
+    isAdmin: { type: Boolean, required: true, default: true },
     verified: { type: Boolean, default: false },
     googleId: { type: String, unique: true, sparse: true }, // ID Google, opzionale
+    favoriteEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Events' }],
     createdAt: { type: Date, default: Date.now }
 })
 
