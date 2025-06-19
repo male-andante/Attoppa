@@ -73,10 +73,12 @@ export const AuthProvider = ({ children }) => {
             throw new Error(data.message || 'Errore durante il login');
         }
 
-        localStorage.setItem('token', data.token);
-        setUser(data.user);
+        // Estrai user e token dalla struttura corretta
+        const { user, token } = data.data || {};
+        localStorage.setItem('token', token);
+        setUser(user);
         setIsAuthenticated(true);
-        setIsAdmin(data.user.isAdmin === true);
+        setIsAdmin(user?.isAdmin === true);
         return data;
     };
 
