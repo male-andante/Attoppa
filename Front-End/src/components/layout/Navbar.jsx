@@ -35,7 +35,7 @@ const NavigationBar = () => {
                                 <Button 
                                     variant="primary" 
                                     onClick={handleLogout}
-                                    className="ms-2"
+                                    className="ms-2 logout-btn"
                                 >
                                     Logout
                                 </Button>

@@ -15,12 +15,12 @@
 
 /* Stili per il componente di benvenuto */
 .welcome-section {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border: 1px solid #dee2e6;
-  border-radius: 0.5rem;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .welcome-section h1 {
