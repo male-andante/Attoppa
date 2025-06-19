@@ -21,9 +21,8 @@ const AdminDashboard = () => {
         ]);
         setEvents(eventsData);
         setLocations(locationsData);
-      } catch (err) {
+      } catch {
         setError('Errore nel caricamento dei dati');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -37,7 +36,7 @@ const AdminDashboard = () => {
       try {
         await deleteEvent(id);
         setEvents(events.filter(event => event.id !== id));
-      } catch (err) {
+      } catch {
         setError('Errore nell\'eliminazione dell\'evento');
       }
     }
@@ -48,7 +47,7 @@ const AdminDashboard = () => {
       try {
         await deleteLocation(id);
         setLocations(locations.filter(location => location.id !== id));
-      } catch (err) {
+      } catch {
         setError('Errore nell\'eliminazione della location');
       }
     }
@@ -74,7 +73,7 @@ const AdminDashboard = () => {
 
   return (
     <Container className="my-5">
-      <h1 className="mb-4">Dashboard Admin</h1>
+      <h1 className="mb-4">Aggiungi il tuo evento</h1>
 
       <Tab.Container activeKey={activeTab} onSelect={setActiveTab}>
         <Nav variant="tabs" className="mb-4">

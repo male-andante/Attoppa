@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
                 console.log('AuthProvider: User authenticated', data);
                 setUser(data);
                 setIsAuthenticated(true);
-                setIsAdmin(data.role === 'admin');
+                setIsAdmin(data.isAdmin === true);
             } else {
                 console.log('AuthProvider: Token invalid');
                 localStorage.removeItem('token');
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', data.token);
         setUser(data.user);
         setIsAuthenticated(true);
-        setIsAdmin(data.user.role === 'admin');
+        setIsAdmin(data.user.isAdmin === true);
         return data;
     };
 
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
                 const userData = await response.json();
                 setUser(userData);
                 setIsAuthenticated(true);
-                setIsAdmin(userData.role === 'admin');
+                setIsAdmin(userData.isAdmin === true);
                 return userData;
             } else {
                 throw new Error('Token non valido');
