@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Container, Form, Button, Card, Spinner, Alert } from 'react-bootstrap';
+import { Container, Form, Button, Card, Spinner, Alert, Row, Col } from 'react-bootstrap';
 import { createEvent, updateEvent, getEventById } from '../../services/events';
 import { getLocations } from '../../services/locations';
 
